@@ -1,1 +1,621 @@
-# Guardian
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>守护未来 - 禁止向未成年人售烟</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            position: relative;
+        }
+
+        .game-header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            font-weight: 300;
+        }
+
+        .game-content {
+            min-height: 400px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .scene-image {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 8px;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 3px solid #3498db;
+        }
+
+        .image-caption {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .story-text {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            text-align: justify;
+            line-height: 1.8;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .choices {
+            display: grid;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .choice-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #2980b9, #1f6399);
+        }
+
+        .choice-btn:active {
+            transform: translateY(0);
+        }
+
+        .audio-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            margin-bottom: 20px;
+        }
+
+        .result-message {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .positive-result {
+            border-left-color: #27ae60;
+            background: #d5f4e6;
+        }
+
+        .negative-result {
+            border-left-color: #e74c3c;
+            background: #fadbd8;
+        }
+
+        .game-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #7f8c8d;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .score-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(52, 152, 219, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 15px;
+            }
+            
+            .game-header h1 {
+                font-size: 2em;
+            }
+            
+            .choice-btn {
+                padding: 12px 20px;
+                font-size: 0.95em;
+            }
+            
+            .score-display {
+                position: relative;
+                top: 0;
+                right: 0;
+                display: inline-block;
+                margin-bottom: 15px;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .law-info {
+            background: #f8f9fa;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>守护未来</h1>
+            <p class="subtitle">禁止向未成年人售烟</p>
+            <div class="score-display">诚信积分: <span id="score">100</span></div>
+        </header>
+        
+        <main class="game-content" id="game-content">
+            <!-- 游戏内容将通过JavaScript动态加载 -->
+        </main>
+        
+        <footer class="game-footer">
+            <p>© 2024 守护未成年人健康 - 本游戏用于宣传教育目的</p>
+        </footer>
+    </div>
+    
+    <script>
+        // 游戏数据
+        const gameData = {
+            start: {
+                title: "重新开始",
+                image: "https://ts3.tc.mm.bing.net/th/id/OIP-C.-cS7idmcE5SoBi-il_AExgHaEJ?rs=1&pid=ImgDetMain&o=7&rm=3",
+                content: `下午放学时间，一个穿着校服的学生走进店里，神情有些紧张。
+        "老板，买包'中华'。"学生说着掏出钱。`,
+                choices: [
+                    { text: "婉言拒绝", next: "refuse" },
+                    { text: "要求出示身份证", next: "askId" },
+                    { text: "教育劝导", next: "educate" },
+                    { text: "询问是否帮家人购买", next: "askFamily" },
+                    { text: "查看门外情况", next: "checkOutside" }
+                ]
+            },
+            
+            refuse: {
+                content: `你温和但坚定地说："同学，对不起，法律规定不能向未成年人售烟。"
+
+        学生愣了一下，低头离开了。
+
+        第二天，
+
+        学生家长专门来店里感谢你："老板，谢谢你没有卖烟给孩子，我们一定好好教育他！"
+
+        客户经理也表扬你："您树立了守法经营的榜样！"`,
+                choices: [
+                    { text: "诚信经营之星", next: "honestStar" }
+                ],
+                scoreChange: 20
+            },
+            
+            askId: {
+                content: `你认真地说："请出示身份证，我们需要核实年龄。"
+
+        学生翻找口袋，支支吾吾："我...我没带身份证。"
+
+        "没有身份证不能购买，这是规定。"你解释道。
+
+        学生无奈地离开。后来市场监管人员巡查时，肯定了你的严格把关。`,
+                choices: [
+                    { text: "正确的选择", next: "correctChoice" }
+                ],
+                scoreChange: 15
+            },
+            
+            educate: {
+                content: `你关切地说："同学，吸烟有害健康，特别是对你们正在发育的身体。而且向未成年人售烟是违法的，请理解。"
+
+        学生红着脸说："对不起，我知道了。"然后快步离开。
+
+        一周后，学校老师来店采购时提到："听说您教育了我们的学生，谢谢您帮我们守护孩子！"`,
+                choices: [
+                    { text: "守护的责任", next: "guardResponsibility" }
+                ],
+                scoreChange: 25
+            },
+            
+            askFamily: {
+                content: `你谨慎地问："是帮家里人买吗？"
+
+        学生立即点头："对对，帮我爷爷买，他腿脚不方便。"`,
+                choices: [
+                    { text: "相信孩子的话", next: "believeChild" },
+                    { text: "要求家人亲自来", next: "askFamilyCome" }
+                ]
+            },
+            
+            checkOutside: {
+                content: `你注意到店外有个中年男子在张望，似乎是学生的父亲。
+
+        学生催促："快点儿，我爸在外面等着呢！"`,
+                choices: [
+                    { text: "直接卖烟", next: "sellDirectly" },
+                    { text: "请父亲进来确认", next: "askFatherConfirm" }
+                ]
+            },
+            
+            honestStar: {
+                content: `因严格遵守未成年人保护规定，
+
+        成为"诚信示范户"！`,
+                choices: [
+                    { text: "重新开始", next: "start" }
+                ],
+                scoreChange: 30
+            },
+            
+            correctChoice: {
+                content: `虽然失去了这单生意，但你维护了法律尊严。
+
+        "短期看少赚一点，长期看赢得信誉！"你坚信。`,
+                choices: [
+                    { text: "重新开始", next: "start" }
+                ],
+                scoreChange: 10
+            },
+            
+            guardResponsibility: {
+                content: `你意识到：守护未成年人不仅是法律要求，更是社会责任。
+
+        你在收银台贴了更醒目的"禁止向未成年人售烟"标识。`,
+                choices: [
+                    { text: "重新开始", next: "start" }
+                ],
+                scoreChange: 15
+            },
+            
+            believeChild: {
+                content: `你心想："孩子这么孝顺，应该没问题。"于是把烟卖给了学生。
+
+        几天后，你在学校附近看到这个学生正在抽烟！原来他是自己抽的。
+
+        市场监管部门接到举报，对你进行了警告处罚。`,
+                choices: [
+                    { text: "贪小失大", next: "smallProfitBigLoss" }
+                ],
+                scoreChange: -30
+            },
+            
+            askFamilyCome: {
+                content: `你坚持说："让你爷爷亲自来买吧，或者你带我去见见他。"
+
+        学生支支吾吾，最后承认："其实...是我自己想抽。"然后羞愧地跑开了。
+
+        客户经理得知后说："您做得对，这种借口很常见，必须核实清楚！"`,
+                choices: [
+                    { text: "行业正能量", next: "industryPositive" }
+                ],
+                scoreChange: 20
+            },
+            
+            smallProfitBigLoss: {
+                content: `因违规售烟，
+
+        你的诚信记录受损，
+
+        收到市场监督管理局罚款单，
+
+        损失远大于那包烟的利润。`,
+                choices: [
+                    { text: "重新开始", next: "start" }
+                ],
+                scoreChange: -40
+            },
+            
+            industryPositive: {
+                content: `你的做法传播开来，
+
+        带动更多零售户共同守护未成年人的健康。`,
+                choices: [
+                    { text: "重新开始", next: "start" }
+                ],
+                scoreChange: 25
+            },
+            
+            sellDirectly: {
+                content: `你看了一眼门外的男子，觉得有大人陪同应该没问题，就把烟卖给了学生。
+
+        后来才发现，那个男子只是路过，学生根本不认识他！孩子是自己想抽烟。
+
+        你因向未成年人售烟被处以罚款。`,
+                choices: [
+                    { text: "经营教训", next: "businessLesson" }
+                ],
+                scoreChange: -35
+            },
+            
+            askFatherConfirm: {
+                content: `你对学生说："请你爸爸进来一下，我需要确认。"
+
+        学生脸色一变，正要说什么，门外的男子走进来："怎么了？"
+
+        你说明情况后，父亲生气地对孩子说："你又撒谎！"然后向你道歉："对不起，孩子不懂事，谢谢您这么负责！"`,
+                choices: [
+                    { text: "价值体现", next: "valueReflection" }
+                ],
+                scoreChange: 25
+            },
+            
+            businessLesson: {
+                content: `这次经历让你深刻明白：
+
+        任何时候都不能向未成年人售烟，
+
+        即使看似有大人陪同也要核实。`,
+                choices: [
+                    { text: "重新开始", next: "start" }
+                ],
+                scoreChange: -20
+            },
+            
+            valueReflection: {
+                content: `你的负责任态度赢得了身边住户的尊重，
+
+        生意反而更好了。`,
+                choices: [
+                    { text: "重新开始", next: "start" }
+                ],
+                scoreChange: 30
+            }
+        };
+
+        // 游戏状态
+        let currentScore = 100;
+
+        // 音频播放函数
+        function playAudio(url) {
+            try {
+                const audio = new Audio(url);
+                audio.play().catch(e => {
+                    console.log('音频播放失败:', e);
+                });
+            } catch (error) {
+                console.log('音频播放错误:', error);
+            }
+        }
+
+        // 更新分数显示
+        function updateScoreDisplay() {
+            document.getElementById('score').textContent = currentScore;
+            
+            // 根据分数改变颜色
+            const scoreElement = document.getElementById('score');
+            if (currentScore >= 80) {
+                scoreElement.style.color = '#27ae60';
+            } else if (currentScore >= 60) {
+                scoreElement.style.color = '#f39c12';
+            } else {
+                scoreElement.style.color = '#e74c3c';
+            }
+        }
+
+        // 重置游戏
+        function resetGame() {
+            currentScore = 100;
+            updateScoreDisplay();
+        }
+
+        // 渲染场景
+        function renderScene(sceneId) {
+            const scene = gameData[sceneId];
+            const contentDiv = document.getElementById('game-content');
+            
+            // 如果重新开始，重置积分
+            if (sceneId === 'start') {
+                resetGame();
+            }
+            
+            let html = `
+                <div class="scene-content fade-in">
+            `;
+            
+            // 添加图片（如果有）
+            if (scene.image) {
+                html += `
+                    <img src="${scene.image}" alt="场景图片" class="scene-image">
+                    <p class="image-caption">图：零售店内</p>
+                `;
+            }
+            
+            // 添加内容
+            html += `
+                <div class="story-text">${scene.content.replace(/\n/g, '<br>')}</div>
+            `;
+            
+            // 添加法律提示（某些场景）
+            if (sceneId === 'start') {
+                html += `
+                    <div class="law-info">
+                        <strong>法律提示：</strong>根据《中华人民共和国未成年人保护法》规定，禁止向未成年人出售烟酒。违反者将面临罚款等处罚。
+                    </div>
+                `;
+            }
+            
+            // 添加选择按钮
+            if (scene.choices && scene.choices.length > 0) {
+                html += `<div class="choices">`;
+                scene.choices.forEach(choice => {
+                    html += `
+                        <button class="choice-btn" onclick="handleChoice('${choice.next}')">
+                            ${choice.text}
+                        </button>
+                    `;
+                });
+                html += `</div>`;
+            }
+            
+            html += `</div>`;
+            
+            contentDiv.innerHTML = html;
+            
+            // 更新分数（如果有变化）
+            if (scene.scoreChange) {
+                currentScore += scene.scoreChange;
+                // 确保分数在合理范围内
+                currentScore = Math.max(0, Math.min(200, currentScore));
+                updateScoreDisplay();
+                
+                // 显示分数变化
+                if (scene.scoreChange > 0) {
+                    showMessage(`+${scene.scoreChange} 诚信积分`, 'positive');
+                } else if (scene.scoreChange < 0) {
+                    showMessage(`${scene.scoreChange} 诚信积分`, 'negative');
+                }
+            }
+        }
+
+        // 处理选择
+        function handleChoice(nextScene) {
+            renderScene(nextScene);
+        }
+
+        // 显示消息
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message;
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 10px 20px;
+                border-radius: 5px;
+                color: white;
+                font-weight: bold;
+                z-index: 1000;
+                animation: fadeIn 0.5s, fadeOut 0.5s 2.5s forwards;
+            `;
+            
+            if (type === 'positive') {
+                messageDiv.style.background = '#27ae60';
+            } else {
+                messageDiv.style.background = '#e74c3c';
+            }
+            
+            document.body.appendChild(messageDiv);
+            
+            // 3秒后移除消息
+            setTimeout(() => {
+                if (document.body.contains(messageDiv)) {
+                    document.body.removeChild(messageDiv);
+                }
+            }, 3000);
+        }
+
+        // 初始化游戏
+        document.addEventListener('DOMContentLoaded', function() {
+            renderScene('start');
+            updateScoreDisplay();
+        });
+    </script>
+</body>
+</html>
